@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+    let H1 = document.createElement('h1')
+    H1.innerText = "Lista de tareas"
+    document.body.appendChild(H1)
+
+    const tareas = ["Estudiar JS", "Repaso inicial python", "Creación Hola mundo"]
+    let ul = document.createElement('ul')
+    ul.id = "myList"
+    document.body.appendChild(ul)
+
+    tareas.forEach(e => {
+
+        let li = document.createElement('li')
+        li.innerText = e
+        ul.appendChild(li)
+        
+    });
+
+    let p = document.createElement('p')
+    p.innerText = "Append para añadir una tarea"
+    document.body.appendChild(p)
+
+    let b = document.createElement('button')
+    b.innerText = "Append"
+    b.onclick = appendElemento
+    document.body.appendChild(b)
+
+    function elimiarFila() {
+
+        let lista = document.getElementById("myList");
+        let ultimoElemento = lista.lastElementChild; 
+
+        if (ultimoElemento) {
+            ultimoElemento.remove(); 
+        }
+    }
+
+    function appendElemento() {
+
+    let li = document.createElement('li');
+    li.innerText = "Nuevo elemento ";
+
+    let btnEliminar = document.createElement('button');
+    btnEliminar.innerText = "Eliminar esta tarea";
+    
+    btnEliminar.onclick = function() {
+        li.remove();
+    };
+
+    li.appendChild(btnEliminar);
+
+    ul.appendChild(li);
+
+    }
+
+   
+    </script>
+</body>
+</html>
