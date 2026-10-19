@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="gl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Reservas de Pistas Municipais — Concello de Ourense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --azul: #0B5FA5;
+    --azul-escuro: #08406F;
+    --azul-claro: #E7F1FA;
+    --fondo: #F2F4F7;
+    --superficie: #FFFFFF;
+    --texto: #171A1E;
+    --texto-sec: #4C5359;
+    --texto-terciario: #626A72;
+    --liña: #DEE2E6;
+    --dispo-fondo: #E4F5E8;
+    --dispo-texto: #1B7A38;
+    --dispo-borde: #B7E3C2;
+    --ocup-fondo: #ECEEF0;
+    --ocup-texto: #565D64;
+    --sel-fondo: var(--azul);
+    --sel-texto: #FFFFFF;
+    --erro: #C0362C;
+    --ambar-fondo: #FDF3DF;
+    --ambar-texto: #8A5A00;
+    --radio-s: 10px;
+    --radio-m: 16px;
+    --radio-l: 24px;
+    --sombra: 0 1px 2px rgba(15,23,32,.06), 0 6px 18px rgba(15,23,32,.08);
+    --fonte: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --fondo: #14181D; --superficie: #1E242B; --texto: #F2F4F6; --texto-sec: #B7BEC6;
+      --texto-terciario: #8B939B; --liña: #313943; --azul-claro: #1B2E42;
+      --dispo-fondo: #16301F; --dispo-texto: #6FD68B; --dispo-borde: #234A2E;
+      --ocup-fondo: #262C33; --ocup-texto: #8E96A0; --ambar-fondo:#2E2610; --ambar-texto:#E0B559;
+      --sombra: 0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --fondo: #14181D; --superficie: #1E242B; --texto: #F2F4F6; --texto-sec: #B7BEC6;
+    --texto-terciario: #8B939B; --liña: #313943; --azul-claro: #1B2E42;
+    --dispo-fondo: #16301F; --dispo-texto: #6FD68B; --dispo-borde: #234A2E;
+    --ocup-fondo: #262C33; --ocup-texto: #8E96A0; --ambar-fondo:#2E2610; --ambar-texto:#E0B559;
+    --sombra: 0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.4);
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--fondo); font-family: var(--fonte); color: var(--texto);
+    min-height: 100vh; display:flex; align-items:center; justify-content:center; padding: 28px 14px;
+  }
+
+  .escaparate{
+    width:100%; max-width: 1180px; display:grid;
+    grid-template-columns: minmax(0,420px) 1fr; gap: 56px; align-items:center;
+  }
+  .intro{ padding: 8px 4px; }
+  .intro .etiqueta{ color: var(--azul); font-weight: 700; font-size: 15px; margin: 0 0 10px; }
+  .intro h1{ font-size: clamp(28px, 4vw, 38px); line-height: 1.15; margin: 0 0 16px; font-weight: 800; letter-spacing: -0.01em; }
+  .intro p{ font-size: 17px; line-height: 1.6; color: var(--texto-sec); max-width: 46ch; margin: 0 0 22px; }
+  .intro .chave{ display:flex; gap:12px; align-items:flex-start; padding: 14px 0; border-top: 1px solid var(--liña); }
+  .intro .chave:last-of-type{ border-bottom: 1px solid var(--liña); }
+  .intro .chave svg{ flex-shrink:0; margin-top:2px; }
+  .intro .chave strong{ display:block; font-size:15.5px; margin-bottom:2px; }
+  .intro .chave span{ font-size:14.5px; color: var(--texto-terciario); }
+
+  .theme-toggle{
+    margin-top: 22px; display:inline-flex; align-items:center; gap:8px;
+    background: var(--superficie); border: 1px solid var(--liña); color: var(--texto-sec);
+    font-family: var(--fonte); font-size: 14px; font-weight: 600; padding: 9px 14px;
+    border-radius: 999px; cursor:pointer;
+  }
+  .theme-toggle:focus-visible{ outline: 3px solid var(--azul); outline-offset: 2px; }
+
+  .marco-movil{
+    justify-self:center; width: 100%; max-width: 380px; height: 800px;
+    background: #05070A; border-radius: 46px; padding: 14px; box-shadow: var(--sombra); position:relative;
+  }
+  .marco-movil::before{
+    content:""; position:absolute; top:14px; left:50%; transform: translateX(-50%);
+    width: 120px; height: 24px; background:#05070A; border-radius: 0 0 16px 16px; z-index: 5;
+  }
+  .pantalla-movil{
+    width:100%; height:100%; background: var(--fondo); border-radius: 34px;
+    overflow:hidden; position:relative; display:flex; flex-direction:column;
+  }
+
+  .app-header{
+    background: linear-gradient(165deg, var(--azul) 0%, var(--azul-escuro) 100%);
+    color:#fff; padding: 30px 20px 18px; flex-shrink:0; position:relative;
+  }
+  .app-header .fila-topo{ display:flex; align-items:center; gap: 10px; min-height: 30px; }
+  .btn-volver{
+    background: rgba(255,255,255,.16); border:none; width:36px; height:36px; border-radius: 10px;
+    display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; flex-shrink:0;
+  }
+  .btn-volver:focus-visible{ outline: 2px solid #fff; outline-offset: 2px; }
+  .app-header h2{ margin:0; font-size: 19px; font-weight:700; }
+  .app-header .subt{ margin: 4px 0 0; font-size: 13.5px; color: rgba(255,255,255,.82); }
+  .app-header.principal h1{ font-size: 22px; font-weight: 800; margin: 0 0 3px; }
+  .app-header.principal p{ margin:0; font-size: 13.5px; color: rgba(255,255,255,.82); }
+
+  .app-corpo{ flex:1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .app-corpo::-webkit-scrollbar{ width:0; }
+
+  .seccion-titulo{ font-size: 21px; font-weight: 800; margin: 18px 18px 12px; letter-spacing: -0.01em; }
+  .seccion-subtitulo{ font-size:13.5px; color:var(--texto-terciario); margin: -8px 18px 14px; }
+
+  /* ---- Busca (pantalla inicio) ---- */
+  .caixa-busca{ padding: 2px 16px 4px; }
+  .campo-busca{ position:relative; display:flex; align-items:center; }
+  .campo-busca svg.icona-lupa{ position:absolute; left:14px; color:var(--texto-terciario); pointer-events:none; }
+  .campo-busca input{
+    width:100%; font-family:var(--fonte); font-size:16px; padding:13px 40px 13px 42px;
+    border-radius:14px; border:1.5px solid var(--liña); background:var(--superficie); color:var(--texto);
+  }
+  .campo-busca input:focus{ outline:none; border-color:var(--azul); box-shadow:0 0 0 3px rgba(11,95,165,.18); }
+  .btn-limpar-busca{
+    position:absolute; right:8px; background:var(--ocup-fondo); border:none; width:26px; height:26px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--texto-sec);
+    cursor:pointer; display:none;
+  }
+  .campo-busca.con-texto .btn-limpar-busca{ display:flex; }
+  .sen-resultados{ text-align:center; padding: 34px 24px; color:var(--texto-terciario); font-size:14.5px; display:none; }
+  .sen-resultados.mostrar{ display:block; }
+
+  /* ---- Tarxetas de pistas ---- */
+  .lista-pistas{ padding: 4px 16px 96px; display:flex; flex-direction:column; gap:12px; }
+  .tarxeta-pista{ background: var(--superficie); border: 1px solid var(--liña); border-radius: var(--radio-m); padding: 16px; }
+  .tarxeta-pista .cabeceira{ display:flex; gap: 13px; align-items:flex-start; margin-bottom: 14px; }
+  .icona-deporte{
+    width: 52px; height:52px; border-radius: 13px; background: var(--azul-claro); color: var(--azul);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  @media (prefers-color-scheme: dark){ .icona-deporte, .avatar-usuario{ color: #6EA9DE; } }
+  :root[data-theme="dark"] .icona-deporte, :root[data-theme="dark"] .avatar-usuario{ color: #6EA9DE; }
+  :root[data-theme="light"] .icona-deporte, :root[data-theme="light"] .avatar-usuario{ color: var(--azul); }
+
+  .tarxeta-pista h3{ margin:0 0 4px; font-size: 17px; font-weight:700; }
+  .ubicacion{ display:flex; align-items:flex-start; gap:5px; font-size: 13.5px; color: var(--texto-terciario); line-height:1.35; }
+  .ubicacion svg{ flex-shrink:0; margin-top:1px; }
+  .prezo-etiqueta{ font-size:13px; font-weight:700; color:var(--azul); margin-top:4px; }
+
+  .btn{
+    font-family: var(--fonte); font-weight: 700; font-size: 16px; border:none; border-radius: 13px;
+    cursor:pointer; height: 50px; display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+  }
+  .btn-primario{ background: var(--azul); color:#fff; }
+  .btn-primario:active{ background: var(--azul-escuro); }
+  .btn-primario:disabled{ background:#C7CCD1; color:#8b9096; cursor:not-allowed; }
+  .btn-secundario{ background: var(--azul-claro); color: var(--azul); }
+  :root[data-theme="dark"] .btn-secundario{ color:#8FC1EE; }
+  @media (prefers-color-scheme:dark){ .btn-secundario{ color:#8FC1EE; } }
+  .btn-perigo{ background: var(--erro); color:#fff; }
+  .btn-perigo:active{ background:#992B23; }
+  .btn-liña-perigo{ background: transparent; color: var(--erro); border: 1.5px solid var(--erro); height:48px; }
+  .btn:focus-visible{ outline: 3px solid var(--azul-escuro); outline-offset: 2px; }
+  :root[data-theme="dark"] .btn:focus-visible{ outline-color:#fff; }
+  @media (prefers-color-scheme:dark){ .btn:focus-visible{ outline-color:#fff; } }
+
+  /* ---- Data e hora ---- */
+  .dias-scroll{ display:flex; gap:9px; overflow-x:auto; padding: 2px 16px 6px; scrollbar-width:none; }
+  .dias-scroll::-webkit-scrollbar{ display:none; }
+  .chip-dia{
+    flex-shrink:0; width: 60px; height: 72px; border-radius: 15px; border: 1.5px solid var(--liña);
+    background: var(--superficie); display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px; cursor:pointer; font-family: var(--fonte); color: var(--texto);
+  }
+  .chip-dia .nome{ font-size: 12.5px; font-weight:600; color: var(--texto-terciario); }
+  .chip-dia .num{ font-size: 19px; font-weight:800; }
+  .chip-dia.seleccionado{ background: var(--azul); border-color: var(--azul); }
+  .chip-dia.seleccionado .nome, .chip-dia.seleccionado .num{ color:#fff; }
+  .chip-dia:focus-visible{ outline: 3px solid var(--azul-escuro); outline-offset:2px; }
+
+  .lenda{ display:flex; gap:18px; padding: 10px 18px 4px; }
+  .lenda-item{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--texto-terciario); }
+  .lenda-mostra{ width:13px; height:13px; border-radius:4px; border:1.5px solid; }
+
+  .grella-horas{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 16px 28px; }
+  .franxa{
+    font-family: var(--fonte); border-radius: 13px; border: 1.5px solid transparent; height: 62px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; cursor:pointer;
+    background: var(--dispo-fondo); color: var(--dispo-texto); border-color: var(--dispo-borde);
+    font-size: 15px; font-weight: 700;
+  }
+  .franxa:focus-visible{ outline: 3px solid var(--azul-escuro); outline-offset:2px; }
+  .franxa.ocupada{ background: var(--ocup-fondo); color: var(--ocup-texto); border-color: transparent; cursor:not-allowed; text-decoration: line-through; }
+  .franxa.seleccionada{ background: var(--sel-fondo); color: var(--sel-texto); border-color: var(--azul-escuro); }
+
+  .barra-inferior{ padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--liña); background: var(--fondo); flex-shrink:0; }
+  .barra-inferior .fila-prezo{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .barra-inferior .fila-prezo .etq{ font-size:13.5px; color:var(--texto-terciario); }
+  .barra-inferior .fila-prezo .val{ font-size:20px; font-weight:800; color:var(--texto); }
+
+  /* ---- Pagamento ---- */
+  .tarxeta-prezo{
+    margin: 16px 16px 4px; background: linear-gradient(135deg, var(--azul) 0%, var(--azul-escuro) 100%);
+    border-radius: var(--radio-m); padding: 18px 20px; color:#fff;
+  }
+  .tarxeta-prezo .etq{ font-size:13px; color:rgba(255,255,255,.8); margin:0 0 4px; }
+  .tarxeta-prezo .val{ font-size:30px; font-weight:800; margin:0; }
+  .tarxeta-prezo .detalle{ font-size:13px; color:rgba(255,255,255,.8); margin-top:6px; }
+
+  .opcions-pago{ padding: 4px 16px; display:flex; flex-direction:column; gap:10px; }
+  .opcion-pago{
+    display:flex; align-items:center; gap:13px; background:var(--superficie); border:1.5px solid var(--liña);
+    border-radius: var(--radio-m); padding:14px 16px; cursor:pointer; text-align:left; font-family:var(--fonte);
+  }
+  .opcion-pago .icona-pago{
+    width:42px; height:42px; border-radius:11px; background:var(--azul-claro); color:var(--azul);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  @media (prefers-color-scheme:dark){ .opcion-pago .icona-pago{ color:#6EA9DE; } }
+  :root[data-theme="dark"] .opcion-pago .icona-pago{ color:#6EA9DE; }
+  .opcion-pago .info-pago{ flex:1; min-width:0; }
+  .opcion-pago .info-pago strong{ display:block; font-size:15.5px; color:var(--texto); }
+  .opcion-pago .info-pago span{ font-size:12.5px; color:var(--texto-terciario); }
+  .opcion-pago .marca-radio{
+    width:22px; height:22px; border-radius:50%; border:2px solid var(--liña); flex-shrink:0; position:relative;
+  }
+  .opcion-pago.seleccionada{ border-color: var(--azul); background: var(--azul-claro); }
+  .opcion-pago.seleccionada .marca-radio{ border-color: var(--azul); }
+  .opcion-pago.seleccionada .marca-radio::after{
+    content:""; position:absolute; inset:3px; border-radius:50%; background:var(--azul);
+  }
+
+  .form-tarxeta{ padding: 6px 16px 4px; }
+  .fila-doble{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+
+  /* ---- Confirmación ---- */
+  .resumo-tarxeta{ margin: 16px 16px 18px; background: var(--superficie); border:1px solid var(--liña); border-radius: var(--radio-m); padding: 18px; }
+  .resumo-cabeceira{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .resumo-cabeceira h3{ margin:0; font-size:17px; font-weight:700; }
+  .resumo-liña{ height:1px; background:var(--liña); margin: 14px 0; }
+  .resumo-fila{ display:flex; align-items:center; gap:10px; margin-bottom:12px; color:var(--texto); font-size:15.5px; }
+  .resumo-fila:last-child{ margin-bottom:0; }
+  .resumo-fila svg{ flex-shrink:0; color:var(--texto-terciario); }
+  .resumo-fila.destacada{ font-weight:800; font-size:17px; }
+  .resumo-fila.destacada span{ margin-left:auto; }
+
+  .bloque-form{ padding: 0 16px; }
+  .bloque-form h4{ font-size:17px; margin: 4px 0 4px; font-weight:700; }
+  .bloque-form .nota{ font-size:13.5px; color:var(--texto-terciario); margin:0 0 16px; line-height:1.45; }
+
+  .campo{ margin-bottom: 14px; }
+  .campo label{ display:block; font-size:13.5px; font-weight:600; color:var(--texto-sec); margin-bottom:6px; }
+  .campo-caixa{ position:relative; display:flex; align-items:center; }
+  .campo-caixa svg{ position:absolute; left:14px; color: var(--texto-terciario); pointer-events:none; }
+  .campo-caixa.sen-icona input{ padding-left:14px; }
+  .campo input{
+    width:100%; font-family: var(--fonte); font-size: 16px; padding: 13px 14px 13px 42px;
+    border-radius: 12px; border: 1.5px solid var(--liña); background: var(--superficie); color: var(--texto);
+  }
+  .campo input:focus{ outline:none; border-color: var(--azul); box-shadow: 0 0 0 3px rgba(11,95,165,.18); }
+  .campo input::placeholder{ color: var(--texto-terciario); opacity: 1; }
+  .campo .erro{ display:none; color: var(--erro); font-size: 12.5px; margin-top:5px; font-weight:600; }
+  .campo.con-erro input{ border-color: var(--erro); }
+  .campo.con-erro .erro{ display:block; }
+
+  .tarxeta-usuario{ display:flex; align-items:center; gap:12px; background: var(--superficie); border:1px solid var(--liña); border-radius: var(--radio-m); padding:14px 16px; margin: 0 16px; }
+  .avatar-usuario{ width:44px; height:44px; border-radius:50%; background: var(--azul-claro); color:var(--azul); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .tarxeta-usuario .info{ flex:1; min-width:0; }
+  .tarxeta-usuario .etq{ font-size:12.5px; color:var(--texto-terciario); margin:0 0 2px; }
+  .tarxeta-usuario .nome{ font-size:16px; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .link-cambiar{ background:none; border:none; color:var(--azul); font-family:var(--fonte); font-weight:700; font-size:13.5px; cursor:pointer; flex-shrink:0; padding:6px; }
+
+  .zona-confirmar{ padding: 22px 16px calc(20px + env(safe-area-inset-bottom)); }
+
+  /* ---- Miñas reservas ---- */
+  .lista-reservas{ padding: 4px 16px 96px; display:flex; flex-direction:column; gap:12px; }
+  .tarxeta-reserva{ background: var(--superficie); border:1px solid var(--liña); border-radius: var(--radio-m); padding:16px; }
+  .tarxeta-reserva .cab-reserva{ display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
+  .tarxeta-reserva h3{ margin:0 0 2px; font-size:16.5px; font-weight:700; }
+  .tarxeta-reserva .data-hora{ font-size:13.5px; color:var(--texto-terciario); }
+  .etiqueta-estado{ margin-left:auto; font-size:11.5px; font-weight:700; padding:4px 9px; border-radius:999px; background:var(--dispo-fondo); color:var(--dispo-texto); flex-shrink:0; white-space:nowrap; }
+  .fila-reserva-meta{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; color:var(--texto-sec); padding-top:10px; border-top:1px dashed var(--liña); }
+  .fila-reserva-meta .prezo{ font-weight:800; color:var(--texto); }
+
+  .estado-baleiro{ text-align:center; padding: 60px 30px; color:var(--texto-terciario); }
+  .estado-baleiro svg{ margin-bottom:14px; color: var(--texto-terciario); }
+  .estado-baleiro p{ font-size:14.5px; line-height:1.5; margin:0 0 20px; }
+  .estado-baleiro .btn{ width:auto; padding:0 20px; height:44px; font-size:14.5px; display:inline-flex; }
+
+  /* ---- Nav inferior ---- */
+  .nav-inferior{
+    display:flex; border-top:1px solid var(--liña); background:var(--superficie); flex-shrink:0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px 8px;
+    background:none; border:none; font-family:var(--fonte); font-size:11.5px; font-weight:600;
+    color: var(--texto-terciario); cursor:pointer; position:relative;
+  }
+  .nav-item.activo{ color: var(--azul); }
+  @media (prefers-color-scheme:dark){ .nav-item.activo{ color:#6EA9DE; } }
+  :root[data-theme="dark"] .nav-item.activo{ color:#6EA9DE; }
+  .nav-item .globo{ position:absolute; top:4px; right:calc(50% - 20px); background:var(--erro); color:#fff; font-size:10px; font-weight:800; min-width:16px; height:16px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 3px; }
+  .nav-item:focus-visible{ outline: 3px solid var(--azul-escuro); outline-offset:-2px; border-radius:8px; }
+
+  /* ---- Veo / modais ---- */
+  .veo{ position:absolute; inset:0; background:rgba(10,14,18,.5); display:none; align-items:center; justify-content:center; padding:28px; z-index: 20; }
+  .veo.mostrar{ display:flex; }
+  .modal-exito{ background: var(--superficie); border-radius: 22px; padding: 26px 22px 22px; text-align:center; max-width: 300px; box-shadow: var(--sombra); max-height: 90%; overflow-y:auto; }
+  .modal-exito .marca-check{ width:56px; height:56px; border-radius:50%; background: var(--dispo-fondo); color: var(--dispo-texto); display:flex; align-items:center; justify-content:center; margin: 0 auto 14px; }
+  .modal-exito h3{ margin:0 0 8px; font-size:18px; font-weight:800; }
+  .modal-exito p{ margin:0 0 16px; font-size:14px; color:var(--texto-sec); line-height:1.5; }
+  .caixa-qr{ background:#fff; border-radius:16px; padding:14px; display:inline-flex; margin: 0 0 14px; border:1px solid var(--liña); }
+  .caixa-qr img, .caixa-qr canvas{ display:block; width:150px; height:150px; }
+  .nota-qr{ font-size:12px; color:var(--texto-terciario); margin:0 0 18px; }
+  .modal-exito .fila-botons{ display:flex; flex-direction:column; gap:9px; }
+  .modal-exito .fila-botons .btn{ height:46px; font-size:14.5px; }
+
+  .modal-qr-detalle .caixa-qr img, .modal-qr-detalle .caixa-qr canvas{ width:180px; height:180px; }
+  .modal-qr-detalle .resumo-tarxeta{ margin:0 0 16px; text-align:left; }
+
+  .pantalla{ display:none; flex-direction:column; height:100%; }
+  .pantalla.activa{ display:flex; }
+
+  @media (max-width: 900px){
+    .escaparate{ grid-template-columns: 1fr; justify-items:center; text-align:left; }
+    .intro{ max-width: 420px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="escaparate">
+
+  <div class="intro">
+    <p class="etiqueta">Concello de Ourense</p>
+    <h1>Reserva a túa pista en tres pasos</h1>
+    <p>Prototipo funcional do fluxo de reserva de instalacións deportivas municipais: busca, pagamento, código QR de acceso e historial de reservas.</p>
+
+    <div class="chave">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B5FA5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <div><strong>Pagamento integrado</strong><span>Escolle tarxeta, Bizum ou efectivo na instalación antes de confirmar.</span></div>
+    </div>
+    <div class="chave">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B5FA5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM21 14v3M17 21h4M14 21v-3"/></svg>
+      <div><strong>QR de acceso</strong><span>Cada reserva xera un código QR para entrar directamente na pista.</span></div>
+    </div>
+
+    <button class="theme-toggle" id="botonTema" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <span id="textoTema">Modo escuro</span>
+    </button>
+  </div>
+
+  <div class="marco-movil">
+    <div class="pantalla-movil">
+
+      <!-- PANTALLA 1: Inicio -->
+      <section class="pantalla activa" id="pantalla-inicio">
+        <div class="app-header principal">
+          <h1>Concello de Ourense</h1>
+          <p>Instalacións Deportivas Municipais</p>
+        </div>
+        <div class="app-corpo">
+          <p class="seccion-titulo">Escolle unha instalación</p>
+          <div class="caixa-busca">
+            <div class="campo-busca" id="caixaBuscaWrap">
+              <svg class="icona-lupa" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" id="inputBusca" placeholder="Buscar por deporte ou lugar…" aria-label="Buscar pista">
+              <button class="btn-limpar-busca" id="btnLimparBusca" type="button" aria-label="Limpar busca">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="lista-pistas" id="listaPistas"></div>
+          <p class="sen-resultados" id="senResultados">Non se atopou ningunha instalación con "<span id="textoBuscaVacio"></span>".</p>
+        </div>
+        <nav class="nav-inferior">
+          <button class="nav-item activo" data-tab="pantalla-inicio">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            Reservar
+          </button>
+          <button class="nav-item" data-tab="pantalla-reservas">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4z"/></svg>
+            Miñas reservas
+            <span class="globo" id="globoReservas" style="display:none;">0</span>
+          </button>
+        </nav>
+      </section>
+
+      <!-- PANTALLA 2: Data e hora -->
+      <section class="pantalla" id="pantalla-data">
+        <div class="app-header">
+          <div class="fila-topo">
+            <button class="btn-volver" data-volver="pantalla-inicio" aria-label="Volver">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div><h2 id="tituloPistaData">—</h2></div>
+          </div>
+        </div>
+        <div class="app-corpo">
+          <p class="seccion-titulo" style="margin-top:16px;">Escolle o día</p>
+          <div class="dias-scroll" id="listaDias"></div>
+          <p class="seccion-titulo">Escolle a hora</p>
+          <div class="lenda">
+            <div class="lenda-item"><span class="lenda-mostra" style="background:var(--dispo-fondo); border-color:var(--dispo-borde);"></span>Dispoñible</div>
+            <div class="lenda-item"><span class="lenda-mostra" style="background:var(--ocup-fondo); border-color:var(--ocup-fondo);"></span>Ocupada</div>
+          </div>
+          <div class="grella-horas" id="grellaHoras"></div>
+        </div>
+        <div class="barra-inferior">
+          <button class="btn btn-primario" id="btnContinuar" disabled>Continuar ao pagamento</button>
+        </div>
+      </section>
+
+      <!-- PANTALLA 3: Pagamento -->
+      <section class="pantalla" id="pantalla-pagamento">
+        <div class="app-header">
+          <div class="fila-topo">
+            <button class="btn-volver" data-volver="pantalla-data" aria-label="Volver">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2>Pagamento</h2>
+          </div>
+        </div>
+        <div class="app-corpo">
+          <div class="tarxeta-prezo">
+            <p class="etq">Importe da reserva</p>
+            <p class="val" id="prezoPagamento">— €</p>
+            <p class="detalle" id="detallePagamento">—</p>
+          </div>
+
+          <p class="seccion-titulo">Forma de pago</p>
+          <div class="opcions-pago" id="opcionsPago">
+            <button class="opcion-pago" data-metodo="tarxeta">
+              <span class="icona-pago"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+              <span class="info-pago"><strong>Tarxeta bancaria</strong><span>Crédito ou débito</span></span>
+              <span class="marca-radio"></span>
+            </button>
+            <button class="opcion-pago" data-metodo="bizum">
+              <span class="icona-pago"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span>
+              <span class="info-pago"><strong>Bizum</strong><span>Pago instantáneo dende o móbil</span></span>
+              <span class="marca-radio"></span>
+            </button>
+            <button class="opcion-pago" data-metodo="efectivo">
+              <span class="icona-pago"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.5-2.5 1.7-2.5 3.3M12 16.5h.01"/></svg></span>
+              <span class="info-pago"><strong>Efectivo na instalación</strong><span>Paga ao chegar, en recepción</span></span>
+              <span class="marca-radio"></span>
+            </button>
+          </div>
+
+          <div class="form-tarxeta" id="formTarxeta" style="display:none;">
+            <div class="campo" id="campoNumTarxeta">
+              <label for="inputNumTarxeta">Número de tarxeta</label>
+              <div class="campo-caixa">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                <input type="text" inputmode="numeric" id="inputNumTarxeta" placeholder="0000 0000 0000 0000" maxlength="19">
+              </div>
+              <p class="erro">Introduce un número de tarxeta válido</p>
+            </div>
+            <div class="fila-doble">
+              <div class="campo" id="campoCaducidade">
+                <label for="inputCaducidade">Caducidade</label>
+                <div class="campo-caixa sen-icona"><input type="text" id="inputCaducidade" placeholder="MM/AA" maxlength="5"></div>
+                <p class="erro">Formato MM/AA</p>
+              </div>
+              <div class="campo" id="campoCvv">
+                <label for="inputCvv">CVV</label>
+                <div class="campo-caixa sen-icona"><input type="text" inputmode="numeric" id="inputCvv" placeholder="123" maxlength="3"></div>
+                <p class="erro">3 díxitos</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="barra-inferior">
+          <button class="btn btn-primario" id="btnContinuarPagamento" disabled>Continuar ao resumo</button>
+        </div>
+      </section>
+
+      <!-- PANTALLA 4: Confirmación -->
+      <section class="pantalla" id="pantalla-confirmacion">
+        <div class="app-header">
+          <div class="fila-topo">
+            <button class="btn-volver" data-volver="pantalla-pagamento" aria-label="Volver">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2>Confirmar reserva</h2>
+          </div>
+        </div>
+        <div class="app-corpo">
+          <div class="resumo-tarxeta">
+            <div class="resumo-cabeceira">
+              <div class="icona-deporte" id="iconaResumo" style="width:44px;height:44px;border-radius:11px;"></div>
+              <h3 id="nomeResumo">—</h3>
+            </div>
+            <div class="resumo-liña"></div>
+            <div class="resumo-fila">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <span id="dataResumo">—</span>
+            </div>
+            <div class="resumo-fila">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span id="horaResumo">—</span>
+            </div>
+            <div class="resumo-fila">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="ubicacionResumo">—</span>
+            </div>
+            <div class="resumo-fila">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              <span id="metodoPagoResumo">—</span>
+            </div>
+            <div class="resumo-liña"></div>
+            <div class="resumo-fila destacada">
+              <span>Total a pagar</span>
+              <span id="prezoResumo">— €</span>
+            </div>
+          </div>
+
+          <div class="bloque-form" id="bloqueFormulario">
+            <h4>Os teus datos</h4>
+            <p class="nota">Só cho preguntamos a primeira vez. A próxima reserva será aínda máis rápida.</p>
+            <div class="campo" id="campoNome">
+              <label for="inputNome">Nome completo</label>
+              <div class="campo-caixa">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" id="inputNome" autocomplete="name" placeholder="Nome e apelidos">
+              </div>
+              <p class="erro">Introduce o teu nome</p>
+            </div>
+            <div class="campo" id="campoTelefono">
+              <label for="inputTelefono">Teléfono de contacto</label>
+              <div class="campo-caixa">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.68 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.32 1.85.55 2.81.68A2 2 0 0122 16.92z"/></svg>
+                <input type="tel" id="inputTelefono" autocomplete="tel" placeholder="600 000 000">
+              </div>
+              <p class="erro">Introduce un teléfono válido</p>
+            </div>
+            <div class="campo" id="campoCorreo">
+              <label for="inputCorreo">Correo electrónico</label>
+              <div class="campo-caixa">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6l-10 7L2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+                <input type="email" id="inputCorreo" autocomplete="email" placeholder="ti@exemplo.gal">
+              </div>
+              <p class="erro">Introduce un correo válido</p>
+            </div>
+          </div>
+
+          <div class="tarxeta-usuario" id="tarxetaUsuario" style="display:none;">
+            <div class="avatar-usuario">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="info">
+              <p class="etq">Reservando como</p>
+              <p class="nome" id="nomeUsuarioGardado">—</p>
+            </div>
+            <button class="link-cambiar" id="btnCambiarUsuario" type="button">Non es ti?</button>
+          </div>
+
+          <div class="zona-confirmar">
+            <button class="btn btn-primario" id="btnConfirmar">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              Confirmar e pagar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANTALLA 5: Miñas reservas -->
+      <section class="pantalla" id="pantalla-reservas">
+        <div class="app-header principal">
+          <h1>Miñas reservas</h1>
+          <p>Consulta as túas reservas e o QR de acceso</p>
+        </div>
+        <div class="app-corpo">
+          <div class="lista-reservas" id="listaReservas"></div>
+          <div class="estado-baleiro" id="estadoBaleiroReservas" style="display:none;">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4z"/></svg>
+            <p>Aínda non tes reservas. Fai a túa primeira reserva escollendo unha instalación en Inicio.</p>
+            <button class="btn btn-secundario" id="btnIrAInicioBaleiro" type="button">Ir a Inicio</button>
+          </div>
+        </div>
+        <nav class="nav-inferior">
+          <button class="nav-item" data-tab="pantalla-inicio">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            Reservar
+          </button>
+          <button class="nav-item activo" data-tab="pantalla-reservas">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4z"/></svg>
+            Miñas reservas
+          </button>
+        </nav>
+      </section>
+
+      <!-- Veo / Modal de éxito -->
+      <div class="veo" id="veoExito">
+        <div class="modal-exito">
+          <div class="marca-check">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+          </div>
+          <h3>Reserva e pago confirmados</h3>
+          <p id="textoExito">A túa reserva quedou rexistrada correctamente.</p>
+          <div class="caixa-qr"><div id="qrExito"></div></div>
+          <p class="nota-qr">Presenta este código QR na entrada da instalación para acceder á pista.</p>
+          <div class="fila-botons">
+            <button class="btn btn-primario" id="btnVerReservasExito">Ver miñas reservas</button>
+            <button class="btn btn-secundario" id="btnAceptarExito">Volver a Inicio</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Veo / Modal detalle reserva (QR) -->
+      <div class="veo" id="veoDetalleReserva">
+        <div class="modal-exito modal-qr-detalle">
+          <h3 id="tituloDetalleReserva">—</h3>
+          <div class="resumo-tarxeta">
+            <div class="resumo-fila">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <span id="detalleDataReserva">—</span>
+            </div>
+            <div class="resumo-fila">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="detalleUbicacionReserva">—</span>
+            </div>
+            <div class="resumo-fila">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              <span id="detallePagoReserva">—</span>
+            </div>
+          </div>
+          <div class="caixa-qr"><div id="qrDetalle"></div></div>
+          <p class="nota-qr">Código de acceso: <strong id="codigoDetalleReserva">—</strong></p>
+          <div class="fila-botons">
+            <button class="btn btn-primario" id="btnPecharDetalle">Pechar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const ICONAS = {
+    padel: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="5"/><path d="M12 12v9M9 17h6"/></svg>',
+    futbol: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7l3.5 2.5-1.3 4.1H9.8L8.5 9.5z"/></svg>',
+    tenis: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="5"/><path d="M12 12v9M9 17h6"/></svg>',
+    baloncesto: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 010 20M2 12h20M4.5 5.5a15 15 0 0015 13M19.5 5.5a15 15 0 01-15 13"/></svg>'
+  };
+
+  const PISTAS = [
+    { id:'padel-1', nome:'Pista de Pádel 1', deporte:'padel', ubicacion:'Polideportivo Municipal — Zona Norte', prezo:12 },
+    { id:'futbol7-1', nome:'Campo de Fútbol 7', deporte:'futbol', ubicacion:'Campo Municipal A Ponte', prezo:45 },
+    { id:'tenis-1', nome:'Pista de Tenis 2', deporte:'tenis', ubicacion:'Polideportivo Municipal — Zona Norte', prezo:8 },
+    { id:'baloncesto-1', nome:'Pista de Baloncesto', deporte:'baloncesto', ubicacion:'Pavillón Municipal do Couto', prezo:18 }
+  ];
+
+  const HORAS = [
+    {h:'09:00', ocupada:false}, {h:'10:00', ocupada:true}, {h:'11:00', ocupada:false},
+    {h:'12:00', ocupada:false}, {h:'13:00', ocupada:true}, {h:'17:00', ocupada:false},
+    {h:'18:00', ocupada:false}, {h:'19:00', ocupada:true}, {h:'20:00', ocupada:false}
+  ];
+
+  const METODOS_PAGO = {
+    tarxeta: 'Tarxeta bancaria',
+    bizum: 'Bizum',
+    efectivo: 'Efectivo na instalación'
+  };
+
+  const DIAS_SEMANA = ['Lun','Mar','Mér','Xov','Ven','Sáb','Dom'];
+  const DIAS_SEMANA_LONGO = ['Luns','Martes','Mércores','Xoves','Venres','Sábado','Domingo'];
+  const MESES = ['xaneiro','febreiro','marzo','abril','maio','xuño','xullo','agosto','setembro','outubro','novembro','decembro'];
+
+  let estado = { pista:null, data:null, hora:null, metodoPago:null };
+  let diasGerados = [];
+
+  // ---------- Pantalla 1: lista + busca ----------
+  const listaPistas = document.getElementById('listaPistas');
+  const senResultados = document.getElementById('senResultados');
+  const inputBusca = document.getElementById('inputBusca');
+  const caixaBuscaWrap = document.getElementById('caixaBuscaWrap');
+
+  function normalizar(txt){
+    return txt.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+
+  function crearTarxetaPista(p){
+    const el = document.createElement('div');
+    el.className = 'tarxeta-pista';
+    el.innerHTML = `
+      <div class="cabeceira">
+        <div class="icona-deporte">${ICONAS[p.deporte]}</div>
+        <div>
+          <h3>${p.nome}</h3>
+          <div class="ubicacion">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>${p.ubicacion}</span>
+          </div>
+          <div class="prezo-etiqueta">${p.prezo} € / hora</div>
+        </div>
+      </div>
+      <button class="btn btn-primario" aria-label="Reservar ${p.nome}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Reservar
+      </button>
+    `;
+    el.querySelector('button').addEventListener('click', () => irAPantallaData(p));
+    return el;
+  }
+
+  function renderizarPistas(filtro){
+    listaPistas.innerHTML = '';
+    const termo = filtro ? normalizar(filtro.trim()) : '';
+    const resultado = termo
+      ? PISTAS.filter(p => normalizar(p.nome + ' ' + p.deporte + ' ' + p.ubicacion).includes(termo))
+      : PISTAS;
+    resultado.forEach(p => listaPistas.appendChild(crearTarxetaPista(p)));
+    senResultados.classList.toggle('mostrar', resultado.length === 0 && termo !== '');
+    document.getElementById('textoBuscaVacio').textContent = filtro || '';
+  }
+  renderizarPistas('');
+
+  inputBusca.addEventListener('input', () => {
+    caixaBuscaWrap.classList.toggle('con-texto', inputBusca.value.length > 0);
+    renderizarPistas(inputBusca.value);
+  });
+  document.getElementById('btnLimparBusca').addEventListener('click', () => {
+    inputBusca.value = '';
+    caixaBuscaWrap.classList.remove('con-texto');
+    renderizarPistas('');
+    inputBusca.focus();
+  });
+
+  // ---------- Pantalla 2: data e hora ----------
+  const listaDias = document.getElementById('listaDias');
+  const grellaHoras = document.getElementById('grellaHoras');
+  const btnContinuar = document.getElementById('btnContinuar');
+
+  function xerarDias(){
+    listaDias.innerHTML = '';
+    diasGerados = [];
+    const hoxe = new Date();
+    for(let i=0;i<7;i++){
+      const d = new Date(hoxe.getFullYear(), hoxe.getMonth(), hoxe.getDate()+i);
+      diasGerados.push(d);
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip-dia' + (i===0 ? ' seleccionado' : '');
+      const nomeDia = DIAS_SEMANA[(d.getDay()+6)%7];
+      chip.innerHTML = `<span class="nome">${nomeDia}</span><span class="num">${d.getDate()}</span>`;
+      chip.setAttribute('aria-label', `Día ${nomeDia} ${d.getDate()}`);
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip-dia').forEach(c => c.classList.remove('seleccionado'));
+        chip.classList.add('seleccionado');
+        estado.data = d;
+        estado.hora = null;
+        document.querySelectorAll('.franxa.seleccionada').forEach(f => f.classList.remove('seleccionada'));
+        actualizarBotonContinuar();
+      });
+      listaDias.appendChild(chip);
+    }
+    estado.data = diasGerados[0];
+  }
+
+  function xerarHoras(){
+    grellaHoras.innerHTML = '';
+    HORAS.forEach(f => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'franxa' + (f.ocupada ? ' ocupada' : '');
+      btn.innerHTML = f.ocupada
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span>${f.h}</span>`
+        : `<span>${f.h}</span>`;
+      btn.setAttribute('aria-label', f.ocupada ? `Franxa das ${f.h}, ocupada` : `Franxa das ${f.h}, dispoñible`);
+      if(f.ocupada) btn.disabled = true;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.franxa').forEach(x => { if(!x.classList.contains('ocupada')) x.classList.remove('seleccionada'); });
+        btn.classList.add('seleccionada');
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg><span>${f.h}</span>`;
+        estado.hora = f.h;
+        actualizarBotonContinuar();
+      });
+      grellaHoras.appendChild(btn);
+    });
+  }
+
+  function actualizarBotonContinuar(){ btnContinuar.disabled = !estado.hora; }
+
+  function irAPantallaData(pista){
+    estado.pista = pista;
+    estado.hora = null;
+    estado.metodoPago = null;
+    document.getElementById('tituloPistaData').textContent = pista.nome;
+    xerarDias();
+    xerarHoras();
+    actualizarBotonContinuar();
+    mostrarPantalla('pantalla-data');
+  }
+
+  btnContinuar.addEventListener('click', () => {
+    if(!estado.hora) return;
+    prepararPagamento();
+    mostrarPantalla('pantalla-pagamento');
+  });
+
+  // ---------- Pantalla 3: pagamento ----------
+  const opcionsPago = document.getElementById('opcionsPago');
+  const formTarxeta = document.getElementById('formTarxeta');
+  const btnContinuarPagamento = document.getElementById('btnContinuarPagamento');
+
+  function prepararPagamento(){
+    document.getElementById('prezoPagamento').textContent = estado.pista.prezo.toFixed(2).replace('.',',') + ' €';
+    document.getElementById('detallePagamento').textContent = `${estado.pista.nome} · 1 hora`;
+    document.querySelectorAll('.opcion-pago').forEach(o => o.classList.remove('seleccionada'));
+    formTarxeta.style.display = 'none';
+    estado.metodoPago = null;
+    btnContinuarPagamento.disabled = true;
+    ['campoNumTarxeta','campoCaducidade','campoCvv'].forEach(id => document.getElementById(id).classList.remove('con-erro'));
+  }
+
+  opcionsPago.querySelectorAll('.opcion-pago').forEach(op => {
+    op.addEventListener('click', () => {
+      opcionsPago.querySelectorAll('.opcion-pago').forEach(o => o.classList.remove('seleccionada'));
+      op.classList.add('seleccionada');
+      estado.metodoPago = op.dataset.metodo;
+      formTarxeta.style.display = estado.metodoPago === 'tarxeta' ? 'block' : 'none';
+      btnContinuarPagamento.disabled = false;
+    });
+  });
+
+  document.getElementById('inputNumTarxeta').addEventListener('input', function(){
+    this.value = this.value.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
+  });
+  document.getElementById('inputCaducidade').addEventListener('input', function(){
+    let v = this.value.replace(/\D/g,'').slice(0,4);
+    if(v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+    this.value = v;
+  });
+  document.getElementById('inputCvv').addEventListener('input', function(){
+    this.value = this.value.replace(/\D/g,'').slice(0,3);
+  });
+
+  function validarTarxeta(){
+    let valido = true;
+    const num = document.getElementById('inputNumTarxeta').value.replace(/\s/g,'');
+    const cad = document.getElementById('inputCaducidade').value;
+    const cvv = document.getElementById('inputCvv').value;
+    const cNum = document.getElementById('campoNumTarxeta');
+    const cCad = document.getElementById('campoCaducidade');
+    const cCvv = document.getElementById('campoCvv');
+    cNum.classList.remove('con-erro'); cCad.classList.remove('con-erro'); cCvv.classList.remove('con-erro');
+    if(num.length < 16){ cNum.classList.add('con-erro'); valido = false; }
+    if(!/^\d{2}\/\d{2}$/.test(cad)){ cCad.classList.add('con-erro'); valido = false; }
+    if(cvv.length < 3){ cCvv.classList.add('con-erro'); valido = false; }
+    return valido;
+  }
+
+  btnContinuarPagamento.addEventListener('click', () => {
+    if(!estado.metodoPago) return;
+    if(estado.metodoPago === 'tarxeta' && !validarTarxeta()) return;
+    encherResumo();
+    prepararFormulario();
+    mostrarPantalla('pantalla-confirmacion');
+  });
+
+  // ---------- Pantalla 4: confirmación ----------
+  function formatarData(d){
+    const nomeDia = DIAS_SEMANA_LONGO[(d.getDay()+6)%7];
+    const mes = MESES[d.getMonth()];
+    return `${nomeDia}, ${d.getDate()} de ${mes}`;
+  }
+
+  function encherResumo(){
+    document.getElementById('iconaResumo').innerHTML = ICONAS[estado.pista.deporte];
+    document.getElementById('nomeResumo').textContent = estado.pista.nome;
+    document.getElementById('dataResumo').textContent = formatarData(estado.data);
+    document.getElementById('horaResumo').textContent = estado.hora + ' h';
+    document.getElementById('ubicacionResumo').textContent = estado.pista.ubicacion;
+    document.getElementById('metodoPagoResumo').textContent = METODOS_PAGO[estado.metodoPago];
+    document.getElementById('prezoResumo').textContent = estado.pista.prezo.toFixed(2).replace('.',',') + ' €';
+  }
+
+  function obterUsuarioGardado(){
+    try{ const raw = localStorage.getItem('reservas_usuario'); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+  }
+  function gardarUsuario(datos){
+    try{ localStorage.setItem('reservas_usuario', JSON.stringify(datos)); }catch(e){}
+  }
+
+  const bloqueFormulario = document.getElementById('bloqueFormulario');
+  const tarxetaUsuario = document.getElementById('tarxetaUsuario');
+
+  function prepararFormulario(){
+    const usuario = obterUsuarioGardado();
+    if(usuario){
+      bloqueFormulario.style.display = 'none';
+      tarxetaUsuario.style.display = 'flex';
+      document.getElementById('nomeUsuarioGardado').textContent = usuario.nome;
+    } else {
+      bloqueFormulario.style.display = 'block';
+      tarxetaUsuario.style.display = 'none';
+    }
+    ['campoNome','campoTelefono','campoCorreo'].forEach(id => document.getElementById(id).classList.remove('con-erro'));
+  }
+
+  document.getElementById('btnCambiarUsuario').addEventListener('click', () => {
+    const usuario = obterUsuarioGardado();
+    bloqueFormulario.style.display = 'block';
+    tarxetaUsuario.style.display = 'none';
+    if(usuario){
+      document.getElementById('inputNome').value = usuario.nome;
+      document.getElementById('inputTelefono').value = usuario.telefono;
+      document.getElementById('inputCorreo').value = usuario.correo;
+    }
+  });
+
+  function validarFormulario(){
+    let valido = true;
+    const nome = document.getElementById('inputNome').value.trim();
+    const telefono = document.getElementById('inputTelefono').value.trim();
+    const correo = document.getElementById('inputCorreo').value.trim();
+    const campoNome = document.getElementById('campoNome');
+    const campoTelefono = document.getElementById('campoTelefono');
+    const campoCorreo = document.getElementById('campoCorreo');
+    campoNome.classList.remove('con-erro'); campoTelefono.classList.remove('con-erro'); campoCorreo.classList.remove('con-erro');
+    if(!nome){ campoNome.classList.add('con-erro'); valido = false; }
+    if(!telefono || telefono.replace(/\D/g,'').length < 9){ campoTelefono.classList.add('con-erro'); valido = false; }
+    if(!correo.includes('@') || !correo.includes('.')){ campoCorreo.classList.add('con-erro'); valido = false; }
+    return valido ? { nome, telefono, correo } : null;
+  }
+
+  // ---------- Historial de reservas ----------
+  function obterHistorico(){
+    try{ const raw = localStorage.getItem('reservas_historico'); return raw ? JSON.parse(raw) : []; }catch(e){ return []; }
+  }
+  function gardarHistorico(lista){
+    try{ localStorage.setItem('reservas_historico', JSON.stringify(lista)); }catch(e){}
+  }
+  function xerarCodigoAcceso(){
+    return 'OU-' + Math.random().toString(36).slice(2,6).toUpperCase() + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+  }
+
+  function pintarQR(contenedorId, texto, tamano){
+    const contenedor = document.getElementById(contenedorId);
+    contenedor.innerHTML = '';
+    if(window.QRCode){
+      new QRCode(contenedor, { text: texto, width: tamano, height: tamano, colorDark: '#171A1E', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+    } else {
+      contenedor.textContent = texto;
+    }
+  }
+
+  document.getElementById('btnConfirmar').addEventListener('click', () => {
+    const formularioVisible = bloqueFormulario.style.display !== 'none';
+    if(formularioVisible){
+      const datos = validarFormulario();
+      if(!datos) return;
+      gardarUsuario(datos);
+    }
+
+    const codigo = xerarCodigoAcceso();
+    const reserva = {
+      id: 'r' + Date.now(),
+      pistaNome: estado.pista.nome,
+      deporte: estado.pista.deporte,
+      ubicacion: estado.pista.ubicacion,
+      dataISO: estado.data.toISOString(),
+      hora: estado.hora,
+      prezo: estado.pista.prezo,
+      metodoPago: estado.metodoPago,
+      codigo: codigo
+    };
+    const historico = obterHistorico();
+    historico.unshift(reserva);
+    gardarHistorico(historico);
+    renderizarReservas();
+
+    document.getElementById('textoExito').textContent =
+      `A túa reserva de ${estado.pista.nome} para o ${formatarData(estado.data)} ás ${estado.hora} quedou rexistrada e pagada con ${METODOS_PAGO[estado.metodoPago].toLowerCase()}.`;
+    pintarQR('qrExito', codigo, 150);
+    document.getElementById('veoExito').classList.add('mostrar');
+  });
+
+  document.getElementById('btnAceptarExito').addEventListener('click', () => {
+    document.getElementById('veoExito').classList.remove('mostrar');
+    mostrarPantalla('pantalla-inicio');
+    activarTab('pantalla-inicio');
+  });
+  document.getElementById('btnVerReservasExito').addEventListener('click', () => {
+    document.getElementById('veoExito').classList.remove('mostrar');
+    mostrarPantalla('pantalla-reservas');
+    activarTab('pantalla-reservas');
+  });
+
+  // ---------- Pantalla 5: Miñas reservas ----------
+  const listaReservas = document.getElementById('listaReservas');
+  const estadoBaleiroReservas = document.getElementById('estadoBaleiroReservas');
+  const globoReservas = document.getElementById('globoReservas');
+
+  function renderizarReservas(){
+    const historico = obterHistorico();
+    listaReservas.innerHTML = '';
+    estadoBaleiroReservas.style.display = historico.length === 0 ? 'block' : 'none';
+    globoReservas.style.display = historico.length > 0 ? 'flex' : 'none';
+    globoReservas.textContent = historico.length;
+
+    historico.forEach(r => {
+      const d = new Date(r.dataISO);
+      const el = document.createElement('div');
+      el.className = 'tarxeta-reserva';
+      el.innerHTML = `
+        <div class="cab-reserva">
+          <div class="icona-deporte" style="width:44px;height:44px;border-radius:11px;">${ICONAS[r.deporte]}</div>
+          <div>
+            <h3>${r.pistaNome}</h3>
+            <div class="data-hora">${formatarData(d)} · ${r.hora} h</div>
+          </div>
+          <span class="etiqueta-estado">Confirmada</span>
+        </div>
+        <div class="fila-reserva-meta">
+          <span>${METODOS_PAGO[r.metodoPago]}</span>
+          <span class="prezo">${r.prezo.toFixed(2).replace('.',',')} €</span>
+        </div>
+      `;
+      el.addEventListener('click', () => amosarDetalleReserva(r));
+      listaReservas.appendChild(el);
+    });
+  }
+
+  function amosarDetalleReserva(r){
+    const d = new Date(r.dataISO);
+    document.getElementById('tituloDetalleReserva').textContent = r.pistaNome;
+    document.getElementById('detalleDataReserva').textContent = `${formatarData(d)} · ${r.hora} h`;
+    document.getElementById('detalleUbicacionReserva').textContent = r.ubicacion;
+    document.getElementById('detallePagoReserva').textContent = METODOS_PAGO[r.metodoPago] + ' · ' + r.prezo.toFixed(2).replace('.',',') + ' €';
+    document.getElementById('codigoDetalleReserva').textContent = r.codigo;
+    pintarQR('qrDetalle', r.codigo, 180);
+    document.getElementById('veoDetalleReserva').classList.add('mostrar');
+  }
+  document.getElementById('btnPecharDetalle').addEventListener('click', () => {
+    document.getElementById('veoDetalleReserva').classList.remove('mostrar');
+  });
+  document.getElementById('btnIrAInicioBaleiro').addEventListener('click', () => {
+    mostrarPantalla('pantalla-inicio');
+    activarTab('pantalla-inicio');
+  });
+
+  // ---------- Navegación xeral ----------
+  function mostrarPantalla(id){
+    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+    document.getElementById(id).classList.add('activa');
+    const corpo = document.getElementById(id).querySelector('.app-corpo');
+    if(corpo) corpo.scrollTop = 0;
+  }
+  function activarTab(id){
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('activo', b.dataset.tab === id));
+  }
+
+  document.querySelectorAll('.btn-volver').forEach(b => {
+    b.addEventListener('click', () => mostrarPantalla(b.dataset.volver));
+  });
+  document.querySelectorAll('.nav-item').forEach(b => {
+    b.addEventListener('click', () => { mostrarPantalla(b.dataset.tab); activarTab(b.dataset.tab); });
+  });
+
+  renderizarReservas();
+
+  // ---------- Selector de tema (claro/escuro) para a demostración ----------
+  const botonTema = document.getElementById('botonTema');
+  const textoTema = document.getElementById('textoTema');
+  function aplicarTemaGardado(){
+    let tema = null;
+    try{ tema = localStorage.getItem('reservas_tema'); }catch(e){}
+    if(tema === 'dark' || tema === 'light'){
+      document.documentElement.setAttribute('data-theme', tema);
+      textoTema.textContent = tema === 'dark' ? 'Modo claro' : 'Modo escuro';
+    }
+  }
+  botonTema.addEventListener('click', () => {
+    const actual = document.documentElement.getAttribute('data-theme');
+    const escuroActivo = actual === 'dark' || (!actual && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const novo = escuroActivo ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', novo);
+    textoTema.textContent = novo === 'dark' ? 'Modo claro' : 'Modo escuro';
+    try{ localStorage.setItem('reservas_tema', novo); }catch(e){}
+  });
+  aplicarTemaGardado();
+
+})();
+</script>
+</body>
+</html>
