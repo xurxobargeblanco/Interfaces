@@ -11,21 +11,26 @@ function App() {
         nome="Pista de Pádel 1"
         ubicacion="Polideportivo Municipal — Zona Norte"
         prezo={12}
+        disponible={false}
       />
       <Card
         nome="Campo de Fútbol 7"
         ubicacion="Campo Municipal A Ponte"
         prezo={45}
+        disponible={true}
       />
       <Card
         nome="Pista de Tenis 2"
         ubicacion="Polideportivo Municipal — Zona Norte"
         prezo={8}
+        disponible={true}
+
       />
       <Card
         nome="Pista de Baloncesto"
         ubicacion="Pavillón Municipal do Couto"
         prezo={18}
+        disponible={true}
       />
     </section>
   )

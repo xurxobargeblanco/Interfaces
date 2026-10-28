@@ -44,3 +44,13 @@
 .btn-primario:hover {
   background: #08406f;
 }
+
+.nondisponible{
+  color: red;
+  font-weight: bold;
+}
+
+.disponible{
+  color: rgb(24, 177, 24);
+  font-weight: bold;
+}
