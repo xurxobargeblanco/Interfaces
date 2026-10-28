@@ -18,7 +18,16 @@ const linguaxes = [
 ];
 
 export default function App() {
-  const elementos = linguaxes.map((linguaxe) => (
+  const interpretadas = linguaxes.filter((l) => l.tipo === "interpretada");
+  const outras = linguaxes.filter((l) => l.tipo !== "interpretada");
+
+  const elementosInterpretadas = interpretadas.map((linguaxe) => (
+    <li key={linguaxe.id}>
+      <b>{linguaxe.nome}</b> ({linguaxe.tipo}, {linguaxe.ano})
+    </li>
+  ));
+
+  const elementosOutras = outras.map((linguaxe) => (
     <li key={linguaxe.id}>
       <b>{linguaxe.nome}</b> ({linguaxe.tipo}, {linguaxe.ano})
     </li>
@@ -27,7 +36,12 @@ export default function App() {
   return (
     <article>
       <h1>Linguaxes de programación</h1>
-      <ul>{elementos}</ul>
+      
+      <h2>Interpretadas</h2>
+      <ul>{elementosInterpretadas}</ul>
+
+      <h2>Outras</h2>
+      <ul>{elementosOutras}</ul>
     </article>
   );
 }
