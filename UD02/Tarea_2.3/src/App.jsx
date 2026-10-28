@@ -1,3 +1,5 @@
+import { Libro } from "./Libro";
+
 const playlists = [
   {
     id: 1,
@@ -17,22 +19,12 @@ const playlists = [
 ];
 
 export default function App() {
-  const elementos = playlists.map((playlist) => (
-    <section key={playlist.id}>
-      <h2>{playlist.nome}</h2>
-
-      <ul>
-        {playlist.cancions.map((cancion, index) => (
-          <li key={index}>{cancion}</li>
-        ))}
-      </ul>
-    </section>
-  ));
-
   return (
     <article>
       <h1>As miñas playlists</h1>
-      {elementos}
+      <Libro></Libro>
+      <Libro></Libro>
+      <Libro></Libro>
     </article>
   );
 }
