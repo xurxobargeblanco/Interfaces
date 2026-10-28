@@ -6,7 +6,7 @@ function Card({ nome, ubicacion, prezo,disponible }) {
           <h3>{nome}</h3>
           <p className="ubicacion">{ubicacion}</p>
           <p className="prezo-etiqueta">{prezo} € / hora</p>
-          <p className={disponible ? "disponible" : "nondisponible"}> {disponible ? "Dispoñible" : "Non dispoñible"} </p>
+          <p className={disponible ? "disponible" : "nondisponible"}> {disponible ? "Dispoñible : " : "Non dispoñible"} </p>
           <br />
         </div>
       </div>
