@@ -28,7 +28,12 @@ export default function App() {
   const elementos = playlists.map((playlist) => (
     <section key={playlist.id}>
       <h2>{playlist.nome}</h2>
-      {/* TODO: aquí vai a lista de cancións */}
+
+      <ul>
+        {playlist.cancions.map((cancion, index) => (
+          <li key={index}>{cancion}</li>
+        ))}
+      </ul>
     </section>
   ));
 
