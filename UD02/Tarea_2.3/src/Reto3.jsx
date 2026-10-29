@@ -7,6 +7,8 @@
 // Como usalo: copia este código en src/App.jsx.
 // Comproba que non hai avisos na consola do navegador.
 
+import Libro from "./Libro";
+
 const libros = [
   { id: 1, titulo: "Dom Quixote", autor: "Miguel de Cervantes", ano: 1605 },
   { id: 2, titulo: "Cen anos de soidade", autor: "Gabriel García Márquez", ano: 1967 },
@@ -16,13 +18,8 @@ const libros = [
 
 export default function App() {
   const elementos = libros.map((libro) => (
-    <li key={libro.id}>
-      <h3>{libro.titulo}</h3>
-      <p>
-        {libro.autor}, {libro.ano}
-      </p>
-    </li>
-  ));
+  <Libro key={libro.id} libro={libro} />
+));
 
   return (
     <section>
