@@ -14,6 +14,8 @@
 
 // import { Fragment } from "react";
 
+import { Fragment } from "react";
+
 const pasos = [
   { id: 1, texto: "Executa npm run build." },
   { id: 2, texto: "Proba a versión final con npm run preview." },
@@ -22,8 +24,12 @@ const pasos = [
 ];
 
 export default function App() {
-  const elementos = pasos.map((paso) => <p key={paso.id}>{paso.texto}</p>);
-
+const elementos = pasos.map((paso, indice) => (
+  <Fragment key={paso.id}>
+    {indice > 0 && <hr />}
+    <p>{paso.texto}</p>
+  </Fragment>
+));
   return (
     <article>
       <h1>Como despregar o proxecto</h1>
