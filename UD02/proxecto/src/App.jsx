@@ -49,5 +49,22 @@ export default function Taboleiro() {
   )
 }
 
+// 29/10/2026 - Estilos con css global e modulos css
+
+import Tarxeta from "./Tarxeta.jsx";
+import Aviso from "./Aviso.jsx";
+
+export default function App() {
+  return (
+    <>
+      <Tarxeta />
+      <Aviso />
+    </>
+  );
+}
+
+
+
+
 
 
