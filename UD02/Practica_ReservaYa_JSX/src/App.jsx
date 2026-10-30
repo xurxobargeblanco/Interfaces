@@ -1,11 +1,18 @@
 import './App.css'
 import Card from './Card.jsx'
+import Navbar from './NavBar.jsx';
+import "./bootstrap.min.css";
+
 
 function App() {
   return (
     <section>
       <h1>Concello de Ourense</h1>
       <p>Instalacións Deportivas Municipais</p>
+
+      <hr />
+
+      <Navbar></Navbar>
 
       <Card
         nome="Pista de Pádel 1"
