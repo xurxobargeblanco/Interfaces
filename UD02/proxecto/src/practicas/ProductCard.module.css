@@ -1,0 +1,7 @@
+.productCard {
+  background: darkolivegreen;
+  border: 2px solid salmon;
+  border-radius: 6px;
+  padding: 2em;
+  box-shadow: 3px 3px 8px darkolivegreen;
+}
