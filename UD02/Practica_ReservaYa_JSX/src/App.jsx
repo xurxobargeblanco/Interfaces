@@ -1,9 +1,10 @@
 import './App.css'
 import Card from './Card.jsx'
+import Menu from './Menu.jsx';
 import Navbar from './NavBar.jsx';
 import "./bootstrap.min.css";
 
-
+const elts = ["Incio","Opc 1","Opc 2","Opc 3","Opc 4","Opc 5"]
 function App() {
   return (
     <section>
@@ -12,7 +13,9 @@ function App() {
 
       <hr />
 
-      <Navbar></Navbar>
+      <Navbar elementos={elts}></Navbar>
+      
+      <Menu/>
 
       <Card
         nome="Pista de Pádel 1"

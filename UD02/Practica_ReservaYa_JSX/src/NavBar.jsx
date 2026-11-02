@@ -1,10 +1,11 @@
-export default function Navbar({barraNavegacion}) {
+
+export default function Navbar({elementos = []}) {
   return (
     <nav className="navbar md:navbar-expand bg-1">
       <div className="container-fluid">
 
         <a className="navbar-brand" href="#">
-          Barra de navegación
+          {elementos[0]}
         </a>
 
         <button
@@ -27,7 +28,7 @@ export default function Navbar({barraNavegacion}) {
         >
           <div className="drawer-header">
             <h5 className="drawer-title" id="navbarDrawerLabel">
-              Menú
+              {elementos[1]}
             </h5>
 
             <button
@@ -42,13 +43,13 @@ export default function Navbar({barraNavegacion}) {
             <ul className="nav navbar-nav me-auto">
               <li className="nav-item">
                 <a className="nav-link active" aria-current="page" href="#">
-                  Inicio
+                  {elementos[2]}
                 </a>
               </li>
 
               <li className="nav-item">
                 <a className="nav-link" href="#">
-                  Ligazón
+                  {elementos[3]}
                 </a>
               </li>
 
@@ -59,7 +60,7 @@ export default function Navbar({barraNavegacion}) {
                   data-bs-toggle="menu"
                   aria-expanded="false"
                 >
-                  Menú
+                  {elementos[4]}
                 </button>
 
                 <div className="menu">
@@ -72,7 +73,7 @@ export default function Navbar({barraNavegacion}) {
 
               <li className="nav-item">
                 <a className="nav-link disabled" aria-disabled="true">
-                  Desactivado
+                  {elementos[5]}
                 </a>
               </li>
             </ul>
