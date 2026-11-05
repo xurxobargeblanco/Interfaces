@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Practicas que non fai falta resubir a repositorios.
+
+*no_add_*
