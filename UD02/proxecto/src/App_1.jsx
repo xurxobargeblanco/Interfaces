@@ -40,7 +40,6 @@ function RepetirDiv({ long }) {
 export default function Taboleiro() {
     return (
         <>
-
             <RepetirDiv long={3} />
         </>
     )
