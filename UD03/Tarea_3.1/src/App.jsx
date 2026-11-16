@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import BarraBusca from '../BarraBuscar';
+import BarraBusca from './BarraBuscar.jsx';
 import ListaProductos from './ListaProductos.jsx';
 
 const PRODUCTOS = [
