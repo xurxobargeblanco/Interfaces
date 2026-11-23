@@ -1,3 +1,6 @@
+import { useState } from "react"
+import Button from "./practicas/Button"
+
 const estiloFila = {
     display: 'flex',
     flexDirection: 'row'
@@ -35,6 +38,24 @@ function RepetirDiv({ long }) {
     }
 
     return divs
+}
+
+function xogo(){
+    const [xTurno,setXturno] = useState(RepetirCadrados)
+    const [historial,setHistorial] = useState()
+    const cadradosActuais = historial[historial.length -1]
+
+    function handleXogo(novosCadrados) {
+        //TODO
+        setHistorial([...historial,novosCadrados])
+        setXturno(!xTurno)
+        console.log(historial);
+    }
+
+    const movementos = historial.map(
+        (cadrados,index) => {
+            <Button>{index == 0 && "Ir ao inicio"}{index != 0 && "Ir ao movemento #" + index}</Button>
+    })
 }
 
 export default function Taboleiro() {
