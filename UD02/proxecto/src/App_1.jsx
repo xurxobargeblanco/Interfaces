@@ -6,24 +6,32 @@ const estiloFila = {
     flexDirection: 'row'
 }
 
-
-function Cadrado({ valor }) {
-    return <button className="square">{valor}</button>
+function Cadrado({ valor, onClickCadrado }) {
+    return (
+        <button className="square" onClick={onClickCadrado}>
+            {valor}
+        </button>
+    )
 }
 
-
-function RepetirCadrados({ long, inicio }) {
-    const cadrados = []
+function RepetirCadrados({ long, fila, cadrados, onXogarCadrado }) {
+    const elementos = []
 
     for (let i = 0; i < long; i++) {
-        cadrados.push(
-            <Cadrado key={i} valor={inicio + i} />
+        const indice = fila * long + i
+        elementos.push(
+            <Cadrado
+                key={indice}
+                valor={cadrados[indice]}
+                onClickCadrado={() => onXogarCadrado(indice)}
+            />
         )
     }
-    return cadrados
+
+    return elementos
 }
 
-function RepetirDiv({ long }) {
+function RepetirDiv({ long, cadrados, onXogarCadrado }) {
     const divs = []
 
     for (let j = 0; j < long; j++) {
@@ -31,7 +39,9 @@ function RepetirDiv({ long }) {
             <div key={j} style={estiloFila}>
                 <RepetirCadrados
                     long={long}
-                    inicio={j * long + 1}
+                    fila={j}
+                    cadrados={cadrados}
+                    onXogarCadrado={onXogarCadrado}
                 />
             </div>
         )
@@ -40,28 +50,71 @@ function RepetirDiv({ long }) {
     return divs
 }
 
-function xogo(){
-    const [xTurno,setXturno] = useState(RepetirCadrados)
-    const [historial,setHistorial] = useState()
-    const cadradosActuais = historial[historial.length -1]
+function Taboleiro({ xTurno, cadrados, onXogar }) {
+    function handleClick(i) {
+        if (cadrados[i]) {
+            return
+        }
 
-    function handleXogo(novosCadrados) {
-        //TODO
-        setHistorial([...historial,novosCadrados])
-        setXturno(!xTurno)
-        console.log(historial);
+        const novosCadrados = [...cadrados]
+        novosCadrados[i] = xTurno ? "X" : "O"
+        onXogar(novosCadrados)
     }
 
-    const movementos = historial.map(
-        (cadrados,index) => {
-            <Button>{index == 0 && "Ir ao inicio"}{index != 0 && "Ir ao movemento #" + index}</Button>
-    })
-}
-
-export default function Taboleiro() {
     return (
         <>
-            <RepetirDiv long={3} />
+            <p>Turno actual: {xTurno ? "X" : "O"}</p>
+            <RepetirDiv
+                long={3}
+                cadrados={cadrados}
+                onXogarCadrado={handleClick}
+            />
         </>
+    )
+}
+
+export default function Xogo() {
+    const [xTurno, setXTurno] = useState(true)
+    const [historial, setHistorial] = useState([Array(9).fill(null)])
+    const [movementoActual, setMovementoActual] = useState(0)
+
+    const cadradosActuais = historial[movementoActual]
+
+    function handleXogo(novosCadrados) {
+        const novoHistorial = [...historial.slice(0, movementoActual + 1), novosCadrados]
+        setHistorial(novoHistorial)
+        setMovementoActual(novoHistorial.length - 1)
+        setXTurno(!xTurno)
+    }
+
+    function irAMovemento(seguinteMovemento) {
+        setMovementoActual(seguinteMovemento)
+        setXTurno(seguinteMovemento % 2 === 0)
+    }
+
+    const movementos = historial.map((cadrados, index) => {
+        const descricion = index === 0 ? "Ir ao inicio" : `Ir ao movemento #${index}`
+        return (
+            <li key={index}>
+                <Button onClick={() => irAMovemento(index)}>
+                    {descricion}
+                </Button>
+            </li>
+        )
+    })
+
+    return (
+        <div className="xogo">
+            <div className="taboleiro">
+                <Taboleiro
+                    xTurno={xTurno}
+                    cadrados={cadradosActuais}
+                    onXogar={handleXogo}
+                />
+            </div>
+            <div className="informacion">
+                <ol>{movementos}</ol>
+            </div>
+        </div>
     )
 }
