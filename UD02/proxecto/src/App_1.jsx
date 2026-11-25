@@ -103,6 +103,10 @@ export default function Xogo() {
         )
     })
 
+    function ordenarPasos(){
+        
+    }
+
     return (
         <div className="xogo">
             <div className="taboleiro">
@@ -114,6 +118,14 @@ export default function Xogo() {
             </div>
             <div className="informacion">
                 <ol>{movementos}</ol>
+            </div>
+            <div className="ordenacion">
+                <Button onClick={() => ordenarPasos}>
+                    {"Ascendente"}
+                </Button>
+                <Button onClick={() => ordenarPasos}>
+                    {"Descendente"}
+                </Button>
             </div>
         </div>
     )
