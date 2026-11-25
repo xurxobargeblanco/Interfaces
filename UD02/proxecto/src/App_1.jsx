@@ -6,15 +6,55 @@ const estiloFila = {
     flexDirection: 'row'
 }
 
-function Cadrado({ valor, onClickCadrado }) {
+const estiloGanador = {
+    backgroundColor: '#a7f3d0',
+    fontWeight: 'bold'
+}
+
+function calcularGanador(cadrados) {
+    const liñas = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ]
+
+    for (let i = 0; i < liñas.length; i++) {
+        const [a, b, c] = liñas[i]
+        if (cadrados[a] && cadrados[a] === cadrados[b] && cadrados[a] === cadrados[c]) {
+            return {
+                ganador: cadrados[a],
+                liña: [a, b, c]
+            }
+        }
+    }
+
+    return null
+}
+
+function obterCoordenadas(indice, long = 3) {
+    const fila = Math.floor(indice / long) + 1
+    const columna = (indice % long) + 1
+    return `(${columna}, ${fila})`
+}
+
+function Cadrado({ valor, onClickCadrado, esGanador }) {
     return (
-        <button className="square" onClick={onClickCadrado}>
+        <button
+            className="square"
+            onClick={onClickCadrado}
+            style={esGanador ? estiloGanador : undefined}
+        >
             {valor}
         </button>
     )
 }
 
-function RepetirCadrados({ long, fila, cadrados, onXogarCadrado }) {
+function RepetirCadrados({ long, fila, cadrados, onXogarCadrado, liñaGanadora }) {
     const elementos = []
 
     for (let i = 0; i < long; i++) {
@@ -24,6 +64,7 @@ function RepetirCadrados({ long, fila, cadrados, onXogarCadrado }) {
                 key={indice}
                 valor={cadrados[indice]}
                 onClickCadrado={() => onXogarCadrado(indice)}
+                esGanador={liñaGanadora.includes(indice)}
             />
         )
     }
@@ -31,7 +72,7 @@ function RepetirCadrados({ long, fila, cadrados, onXogarCadrado }) {
     return elementos
 }
 
-function RepetirDiv({ long, cadrados, onXogarCadrado }) {
+function RepetirDiv({ long, cadrados, onXogarCadrado, liñaGanadora }) {
     const divs = []
 
     for (let j = 0; j < long; j++) {
@@ -42,6 +83,7 @@ function RepetirDiv({ long, cadrados, onXogarCadrado }) {
                     fila={j}
                     cadrados={cadrados}
                     onXogarCadrado={onXogarCadrado}
+                    liñaGanadora={liñaGanadora}
                 />
             </div>
         )
@@ -50,24 +92,36 @@ function RepetirDiv({ long, cadrados, onXogarCadrado }) {
     return divs
 }
 
-function Taboleiro({ xTurno, cadrados, onXogar }) {
+function Taboleiro({ xTurno, cadrados, onXogar, infoGanador }) {
     function handleClick(i) {
-        if (cadrados[i]) {
+        if (cadrados[i] || infoGanador) {
             return
         }
 
         const novosCadrados = [...cadrados]
         novosCadrados[i] = xTurno ? "X" : "O"
-        onXogar(novosCadrados)
+        onXogar(novosCadrados, i)
     }
+
+    let estadoTexto
+    if (infoGanador) {
+        estadoTexto = `Gañou: ${infoGanador.ganador}`
+    } else if (!cadrados.includes(null)) {
+        estadoTexto = "Resultado: empate"
+    } else {
+        estadoTexto = `Turno actual: ${xTurno ? "X" : "O"}`
+    }
+
+    const liñaGanadora = infoGanador ? infoGanador.liña : []
 
     return (
         <>
-            <p>Turno actual: {xTurno ? "X" : "O"}</p>
+            <p>{estadoTexto}</p>
             <RepetirDiv
                 long={3}
                 cadrados={cadrados}
                 onXogarCadrado={handleClick}
+                liñaGanadora={liñaGanadora}
             />
         </>
     )
@@ -75,13 +129,24 @@ function Taboleiro({ xTurno, cadrados, onXogar }) {
 
 export default function Xogo() {
     const [xTurno, setXTurno] = useState(true)
-    const [historial, setHistorial] = useState([Array(9).fill(null)])
+    const [historial, setHistorial] = useState([
+        { cadrados: Array(9).fill(null), coords: null }
+    ])
     const [movementoActual, setMovementoActual] = useState(0)
+    const [ordeAscendente, setOrdeAscendente] = useState(true)
 
-    const cadradosActuais = historial[movementoActual]
+    const entradaActual = historial[movementoActual]
+    const cadradosActuais = entradaActual.cadrados
+    const infoGanador = calcularGanador(cadradosActuais)
 
-    function handleXogo(novosCadrados) {
-        const novoHistorial = [...historial.slice(0, movementoActual + 1), novosCadrados]
+    function handleXogo(novosCadrados, indiceXogado) {
+        const novoHistorial = [
+            ...historial.slice(0, movementoActual + 1),
+            {
+                cadrados: novosCadrados,
+                coords: obterCoordenadas(indiceXogado, 3)
+            }
+        ]
         setHistorial(novoHistorial)
         setMovementoActual(novoHistorial.length - 1)
         setXTurno(!xTurno)
@@ -92,20 +157,32 @@ export default function Xogo() {
         setXTurno(seguinteMovemento % 2 === 0)
     }
 
-    const movementos = historial.map((cadrados, index) => {
-        const descricion = index === 0 ? "Ir ao inicio" : `Ir ao movemento #${index}`
+    const listaMovementos = historial.map((entrada, index) => {
+        if (index === movementoActual) {
+            const sufixoCoords = entrada.coords ? ` ${entrada.coords}` : ""
+            return (
+                <li key={index}>
+                    <span>Estás no movemento #{index}{sufixoCoords}</span>
+                </li>
+            )
+        }
+
+        const baseTexto = index === 0
+            ? "Ir ao inicio"
+            : `Ir ao movemento #${index} ${entrada.coords}`
+
         return (
             <li key={index}>
                 <Button onClick={() => irAMovemento(index)}>
-                    {descricion}
+                    {baseTexto}
                 </Button>
             </li>
         )
     })
 
-    function ordenarPasos(){
-        
-    }
+    const movementosOrdenados = ordeAscendente
+        ? listaMovementos
+        : [...listaMovementos].reverse()
 
     return (
         <div className="xogo">
@@ -114,18 +191,14 @@ export default function Xogo() {
                     xTurno={xTurno}
                     cadrados={cadradosActuais}
                     onXogar={handleXogo}
+                    infoGanador={infoGanador}
                 />
             </div>
             <div className="informacion">
-                <ol>{movementos}</ol>
-            </div>
-            <div className="ordenacion">
-                <Button onClick={() => ordenarPasos}>
-                    {"Ascendente"}
-                </Button>
-                <Button onClick={() => ordenarPasos}>
-                    {"Descendente"}
-                </Button>
+                <button type="button" onClick={() => setOrdeAscendente(!ordeAscendente)}>
+                    Orde: {ordeAscendente ? "Ascendente" : "Descendente"}
+                </button>
+                <ol>{movementosOrdenados}</ol>
             </div>
         </div>
     )
